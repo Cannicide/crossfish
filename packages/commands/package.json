@@ -1,0 +1,32 @@
+{
+  "name": "@crossfish/commands",
+  "version": "1.0.0",
+  "description": "The extremely easy-to-use, powerful Crossfish Discord command handler.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "node ./test/test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cannicide/crossfish.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "slash",
+    "handler",
+    "command",
+    "discord.js",
+    "djs",
+    "cannicide"
+  ],
+  "author": "Cannicide",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Cannicide/crossfish/issues"
+  },
+  "homepage": "https://github.com/Cannicide/crossfish#readme",
+  "dependencies": {
+    "discord-api-types": "^0.37.48"
+  }
+}

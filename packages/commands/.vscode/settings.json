@@ -1,0 +1,7 @@
+{
+    "js/ts.implicitProjectConfig.checkJs": true,
+    "typescript.format.semicolons": "insert",
+    "javascript.format.semicolons": "insert",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.validate.enable": true
+}
