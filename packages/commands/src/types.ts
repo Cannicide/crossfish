@@ -124,4 +124,9 @@ class SubTypeUtil {
     }
 }
 
-export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil }
+interface Command {
+
+    data: any;
+}
+
+export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command }

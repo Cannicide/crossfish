@@ -1,5 +1,5 @@
 import ErrorUtil from "./errors";
-import { ArgType } from "./enums";
+import { ArgType } from "./types";
 
 interface PartialArgument {
     name: string;
