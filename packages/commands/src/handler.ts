@@ -1,4 +1,4 @@
-import { Collection, Client, GuildMember, Guild } from "discord.js";
+import { Collection, Client, GuildMember, Guild, ApplicationCommandDataResolvable, GuildChannel } from "discord.js";
 import ErrorUtil from "./errors";
 import { Command } from "./types";
 
@@ -39,7 +39,7 @@ class CrossfishHandler {
         }
     }
 
-    static getCommand(commandName: string) : Command {
+    static getCommand(commandName: string) : Command | null {
         return this.#cache.get(commandName) ?? null;
     }
 
@@ -77,7 +77,7 @@ class CrossfishHandler {
                 ErrorUtil.badtype(result, "array", "autoComplete callback return result");
 
                 if (!result) interaction.respond([]);
-                else interaction.respond(result.map(key => ({ name: key, value: key })));
+                else interaction.respond(result.map((key: { name: string, value: any }) => ({ name: key, value: key })));
             }
         });
     }
@@ -91,11 +91,11 @@ class CrossfishHandler {
         if (applicationCommands.size) {
             try {
                 await this.client.application?.commands?.set(applicationCommands.map(c => c?.data.JSON).map(j => {
-                    this.debug("PUBLISHED GLOBAL COMMAND:", j.name);
+                    this.debug("PUBLISHED GLOBAL COMMAND:", j!.name);
                     return j;
-                }));
+                }) as ApplicationCommandDataResolvable[]);
             }
-            catch (err) {
+            catch (err: any) {
                 this.debug(`FAILED TO PUBLISH GUILD COMMANDS`);
                 ErrorUtil.pred(() => true, `Crossfish Commands Error: Issue publishing guild commands.\nError Message: ${err.message}`);
             }
@@ -106,11 +106,11 @@ class CrossfishHandler {
         for (const guild of this.getGuilds(guilds).values()) {
             try {
                 await guild?.commands?.set(guildCommands.filter(c => c.data.guilds.has(guild.id)).map(c => c?.data.JSON).map(j => {
-                    this.debug(`PUBLISHED GUILD <${guild.id}> COMMAND:`, j.name);
+                    this.debug(`PUBLISHED GUILD <${guild.id}> COMMAND:`, j!.name);
                     return j;
-                }));
+                }) as ApplicationCommandDataResolvable[]);
             }
-            catch (err) {
+            catch (err: any) {
                 this.debug(`FAILED TO PUBLISH GLOBAL COMMANDS`);
                 ErrorUtil.pred(() => true, `Crossfish Commands Error: Issue publishing guild commands.\nError Message: ${err.message}`);
             }
@@ -129,7 +129,7 @@ class CrossfishHandler {
             const action = command.action;
             const member = interaction.member as GuildMember;
 
-            if (channels.length && !channels.some(c => c && (c == interaction.channel?.name || c == interaction.channel?.id))) {
+            if (channels.length && interaction.channel && !interaction.channel.isDMBased() && !channels.some(c => c && (c == (interaction.channel as GuildChannel).name || c == interaction.channel?.id))) {
                 if (CrossfishHandler.Errors.Channel) interaction.reply({ content: CrossfishHandler.Errors.Channel, ephemeral: true });
                 return;
             }
@@ -145,7 +145,7 @@ class CrossfishHandler {
             try {
                 await action(interaction);
             }
-            catch (err) {
+            catch (err: any) {
                 setTimeout(() => {
                     if (interaction.deferred && CrossfishHandler.Errors.Execution) interaction.editReply({ content: CrossfishHandler.Errors.Execution });
                     else if (!interaction.replied && CrossfishHandler.Errors.Execution) interaction.reply({ content: CrossfishHandler.Errors.Execution, ephemeral: true });
@@ -175,12 +175,12 @@ class CrossfishHandler {
 
             for (const guild of this.getGuilds([...data.guilds.values()]).values()) {
                 try {
-                    const output = await guild?.commands?.create(data.JSON);
+                    const output = await guild?.commands?.create(data.JSON as ApplicationCommandDataResolvable);
                     if (!output) return;
-                    this.debug(`POST-PUBLISHED GUILD <${guild.id}> COMMAND:`, data.JSON.name);
+                    this.debug(`POST-PUBLISHED GUILD <${guild.id}> COMMAND:`, data.JSON!.name);
                 }
-                catch (err) {
-                    this.debug(`FAILED TO POST-PUBLISH GUILD <${guild.id}> COMMAND:`, data.JSON.name);
+                catch (err: any) {
+                    this.debug(`FAILED TO POST-PUBLISH GUILD <${guild.id}> COMMAND:`, data.JSON!.name);
                     ErrorUtil.pred(() => true, `Crossfish Commands Error: Issue post-publishing guild command.\nError Message: ${err.message}`);
                 }
             }
@@ -189,12 +189,12 @@ class CrossfishHandler {
             // Add application command:
             
             try {
-                const output = await this.client.application?.commands?.create(data.JSON);
+                const output = await this.client.application?.commands?.create(data.JSON as ApplicationCommandDataResolvable);
                 if (!output) return;
-                this.debug("POST-PUBLISHED GLOBAL COMMAND:", data.JSON.name);
+                this.debug("POST-PUBLISHED GLOBAL COMMAND:", data.JSON!.name);
             }
-            catch (err) {
-                this.debug(`FAILED TO POST-PUBLISH GLOBAL COMMAND:`, data.JSON.name);
+            catch (err: any) {
+                this.debug(`FAILED TO POST-PUBLISH GLOBAL COMMAND:`, data.JSON!.name);
                 ErrorUtil.pred(() => true, `Crossfish Commands Error: Issue post-publishing global command.\nError Message: ${err.message}`);
             }
         }

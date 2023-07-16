@@ -1,22 +1,5 @@
 import ErrorUtil from "./errors";
-import { ArgType } from "./types";
-
-interface PartialArgument {
-    name: string;
-    type: string;
-    sub: boolean;
-    choices?: any[];
-    max?: number;
-    min?: number;
-    maxLength?: number;
-    minLength?: number;
-    autoComplete?: boolean;
-}
-
-interface Argument extends PartialArgument {
-    subgroup?: boolean;
-    subcommand?: boolean;
-};
+import { ArgType, PartialArgument, Argument } from "./types";
 
 class CrossfishSyntax {
     
@@ -67,7 +50,7 @@ class CrossfishSyntax {
             }
 
             return result;
-        });
+        }) as Argument[];
 
         // Error checking:
 
@@ -89,8 +72,8 @@ class CrossfishSyntax {
 
     static parseInnerArgument(arg: string) : PartialArgument {
         let result = {
-            name: null,
-            type: null,
+            name: undefined,
+            type: undefined,
             sub: false,
             choices: undefined,
             max: undefined,
@@ -98,7 +81,7 @@ class CrossfishSyntax {
             maxLength: undefined,
             minLength: undefined,
             autoComplete: false
-        };
+        } as Partial<PartialArgument>;
 
         let comps = arg.slice(1, -1).trim().split(":");
         result.name = comps[0].trim();
@@ -114,7 +97,7 @@ class CrossfishSyntax {
                 // Choices specified
 
                 result.choices = data.split(/\s*\|\s*/g); // Matches all pipe (|) characters and any connected whitespace characters
-                ErrorUtil.pred(() => result.choices.length < 2, "At least two choices must be specified when using choices");
+                ErrorUtil.pred(() => result.choices!.length < 2, "At least two choices must be specified when using choices");
 
                 if (result.choices.some(c => isNaN(c))) result.type = ArgType.String;
                 else if (result.choices.every(c => Number.isInteger(Number(c)))) result.type = ArgType.Int;
@@ -161,7 +144,7 @@ class CrossfishSyntax {
         }
 
         if (!result.type) result.type = ArgType.String;
-        return result;
+        return result as PartialArgument;
     }
 
 }

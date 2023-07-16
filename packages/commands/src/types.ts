@@ -187,4 +187,21 @@ interface Command {
     data: CommandData;
 }
 
-export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command, CommandData, CrossfishPermissions, CrossfishDoc, CrossfishDocMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }
+interface PartialArgument {
+    name: string;
+    type: string;
+    sub: boolean;
+    choices?: any[];
+    max?: number;
+    min?: number;
+    maxLength?: number;
+    minLength?: number;
+    autoComplete?: boolean;
+}
+
+interface Argument extends PartialArgument {
+    subgroup?: boolean;
+    subcommand?: boolean;
+};
+
+export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, PartialArgument, Argument, Command, CommandData, CrossfishPermissions, CrossfishDoc, CrossfishDocMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }
