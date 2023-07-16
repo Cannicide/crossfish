@@ -75,7 +75,7 @@ class CrossfishUtils {
             let path = dir + "/" + file;
             if (fs.lstatSync(path).isDirectory()) {
                 await this.loadFiles(path);
-            } else if (path.endsWith(".js") || path.endsWith(".cjs") || path.endsWith(".mjs") || path.endsWith(".ts")) {
+            } else if (path.endsWith(".js") || path.endsWith(".cjs") || path.endsWith(".mjs")) {
                 await this.loadFile(path);
             }
         }
