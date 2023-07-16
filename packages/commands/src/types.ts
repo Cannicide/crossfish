@@ -222,6 +222,7 @@ interface BaseClientOptions extends ClientOptions {
         Channel?: string,
         Execution?: string
     };
+    path?: string;
 }
 
 interface ExistingClientOptions extends BaseClientOptions {
