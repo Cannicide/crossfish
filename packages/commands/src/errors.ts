@@ -20,7 +20,7 @@ export default class ErrorUtil {
     /**
      * Throws an error when a Collection already contains a key equal to the variable.
      */
-    static isdupe(variable: any, collection: Collection<any, any>, descriptor: string) {
+    static isdupe(variable: any, collection: Collection<any, any>|Map<any, any>, descriptor: string) {
         if (collection.has(variable)) throw new Error("Crossfish Commands Error: Cannot define duplicate " + descriptor + "s.");
     }
 
@@ -34,14 +34,16 @@ export default class ErrorUtil {
     /**
      * Throws an error if the given predicate function returns true.
      */
-    static pred(f: () => boolean, message: string) {
+    static pred(f: () => boolean|undefined, message: string) {
         if (f()) throw new Error("Crossfish Commands Error: " + message + ".");
     }
 
     /**
      * Throws an error if slash command name validation -- which are used by the names of commands and their arguments -- fails.
      */
-    static slashname(name: string, descriptor: string) {
+    static slashname(name: string|undefined, descriptor: string) {
+        if (!name) return;
+
         // Official regex provided by Discord API, modified to allow space character
         if (!name.match(/^[-_ \p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/gu)) throw new Error(`Crossfish Commands Error: Invalid ${descriptor} name '${name}'. These names can only contain '-', '_', and letters and numbers in any language.`);
         if (name.match(/[\p{Lu}]/gu)) throw new Error(`Crossfish Commands Error: Invalid ${descriptor} name '${name}'. These names must be fully lowercase, except for letters in certain languages that do not have lowercase variants.`);
@@ -50,7 +52,8 @@ export default class ErrorUtil {
     /**
      * Throws an error if a value exceeds the provided minimum and maximum boundaries (both min and max are inclusive).
      */
-    static minmax(value: number, descriptor: string, min: number, max: number) {
+    static minmax(value: number|undefined, descriptor: string, min: number, max: number) {
+        if (value == undefined) return;
         if (value < min) throw new Error(`Crossfish Commands Error: Value of property '${descriptor}' is below the minimum of ${min}.`);
         if (value > max) throw new Error(`Crossfish Commands Error: Value of property '${descriptor}' is above the maximum of ${max}.`);
     }
@@ -58,7 +61,7 @@ export default class ErrorUtil {
     /**
      * Throws an error when a Collection does not contain a key equal to the variable.
      */
-    static hasnot(variable: any, collection: Collection<any, any>, message: string) {
+    static hasnot(variable: any, collection: Collection<any, any>|Map<any, any>, message: string) {
         if (!collection.has(variable)) throw new Error("Crossfish Commands Error: " + message + ".");
     }
 }

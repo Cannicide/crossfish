@@ -1,4 +1,5 @@
-import { ChannelType as CT } from "discord-api-types/v10";
+import { ChannelType as CT, RESTPostAPIChatInputApplicationCommandsJSONBody, LocalizationMap } from "discord-api-types/v10";
+import { AutocompleteInteraction, ChatInputCommandInteraction, PermissionResolvable, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 
 const ChannelType = {
     Voice: [CT.GuildVoice],
@@ -31,17 +32,18 @@ const ArgType = {
     Float: "number",
     Int: "integer",
     File: "attachment",
-    Unknown: undefined
+    Unknown: "unknown"
 } as const;
 
 const SubType = {
     Subcommand: "subcommand",
     Subgroup: "subgroup",
-    Hybrid: "both"
+    Hybrid: "both",
+    Unknown: "unknown"
 } as const;
 
 class ArgTypeUtil {
-    static get(value?: string | CT[]) {
+    static get(value: string | readonly CT[]) {
         if (typeof value !== "string") return value;
 
         value = value.replace(/[^a-zA-Z]/g, "").toLowerCase().trim();
@@ -86,12 +88,12 @@ class ArgTypeUtil {
         return ArgType.Unknown;
     }
 
-    static isNumeric(value?: string | CT[]) {
+    static isNumeric(value: string | readonly CT[]) {
         const key = this.get(value);
         return key == ArgType.Float || key == ArgType.Int;
     }
 
-    static asPrimitive(value?: string | CT[]) {
+    static asPrimitive(value: string | readonly CT[]) {
         switch (this.get(value)) {
             case ArgType.User:
             case ArgType.Role:
@@ -106,7 +108,7 @@ class ArgTypeUtil {
         }
     }
 
-    static isChannel(value?: string | CT[]) {
+    static isChannel(value: string | readonly CT[]) {
         const key = this.get(value);
         return Array.isArray(key);
     }
@@ -114,19 +116,75 @@ class ArgTypeUtil {
     static choiceTypes() {
         return [ ArgType.String, ArgType.Float, ArgType.Int ];
     }
+
+    static isChoiceType(choice: any) {
+        if (typeof choice === "string" || typeof choice === "number") return true;
+        return false;
+    }
 }
 
 class SubTypeUtil {
-    static getType(subgroup?, subcommand?) {
+    static getType(subgroup?: string, subcommand?: string) {
         if (subgroup && subcommand) return SubType.Hybrid;
         if (subcommand) return SubType.Subcommand;
         if (subgroup) return SubType.Subgroup;
+        return SubType.Unknown;
     }
+}
+
+type CrossfishPermissions = PermissionResolvable;
+type CrossfishLocalizations = LocalizationMap & { "default": string | null | undefined };
+type CrossfishAutocompleteAction = (interaction: AutocompleteInteraction) => any;
+type CrossfishCommandAction = (interaction: ChatInputCommandInteraction) => any;
+
+interface CrossfishDoc {
+    [argumentName: string]: string | LocalizationMap;
+}
+
+interface CrossfishDocMap {
+    [commandName: string]: CrossfishDoc;
+}
+
+interface CrossfishAutocompleteActionMap {
+    [argumentName: string]: CrossfishAutocompleteAction;
+}
+
+interface CrossfishCommandActionMap {
+    [subcommandName: string]: CrossfishCommandAction;
+    DEFAULT: CrossfishCommandAction;
+}
+
+interface RawArgumentData {
+    name?: string;
+    description?: string;
+    type?: string;
+    optional?: boolean;
+    subcommand?: string;
+    subgroup?: string;
+    choices?: string[]|number[];
+    max?: number;
+    min?: number;
+    maxLength?: number;
+    minLength?: number;
+}
+
+interface CommandData {
+    subs: Map<string, SlashCommandSubcommandBuilder|SlashCommandSubcommandGroupBuilder|SlashCommandStringOption>;
+    autoComplete: Map<string, CrossfishAutocompleteAction>;
+    requires: {
+        perms: Set<CrossfishPermissions>,
+        roles: Set<string>
+    };
+    channels: Set<string>;
+    guilds: Set<string>;
+    docs?: CrossfishDoc;
+    action: CrossfishCommandAction;
+    JSON?: RESTPostAPIChatInputApplicationCommandsJSONBody;
 }
 
 interface Command {
 
-    data: any;
+    data: CommandData;
 }
 
-export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command }
+export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command, CommandData, CrossfishPermissions, CrossfishDoc, CrossfishDocMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }
