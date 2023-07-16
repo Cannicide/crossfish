@@ -1,5 +1,5 @@
 import { ChannelType as CT, RESTPostAPIChatInputApplicationCommandsJSONBody, LocalizationMap } from "discord-api-types/v10";
-import { AutocompleteInteraction, ChatInputCommandInteraction, PermissionResolvable, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
+import { AutocompleteInteraction, ChatInputCommandInteraction, PermissionResolvable, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 
 const ChannelType = {
     Voice: [CT.GuildVoice],
@@ -183,8 +183,18 @@ interface CommandData {
 }
 
 interface Command {
-
     data: CommandData;
+
+    builder: SlashCommandBuilder;
+    docs(json: string|CrossfishDocMap) : Command;
+    arguments(...args: string[]|string[][]) : Command;
+    requires(...permsOrRoles: string[]|string[][]) : Command;
+    channels(...channels: string[]|string[][]) : Command;
+    guilds(...guilds: string[]|string[][]) : Command;
+    allowDM(enabled: boolean) : Command;
+    nsfw() : Command;
+    autocomplete(methods: CrossfishAutocompleteActionMap) : Command;
+    action(method: CrossfishCommandAction | CrossfishCommandActionMap): void;
 }
 
 interface PartialArgument {
