@@ -2,9 +2,11 @@
   "name": "@crossfish/commands",
   "version": "1.0.0",
   "description": "The extremely easy-to-use, powerful Crossfish Discord command handler.",
-  "main": "./src/index.ts",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
   "scripts": {
-    "test": "node ./test/test.ts"
+    "build": "tsc",
+    "test": "node ./test/test.js"
   },
   "repository": {
     "type": "git",

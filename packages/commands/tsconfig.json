@@ -13,6 +13,11 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "moduleResolution": "node16"
-    }
+      "moduleResolution": "node16",
+
+      "outDir": "lib",
+      "declaration": true
+    },
+
+    "include": ["src/**/*"]
 }

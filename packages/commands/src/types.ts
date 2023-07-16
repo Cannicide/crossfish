@@ -1,5 +1,5 @@
 import { ChannelType as CT, RESTPostAPIChatInputApplicationCommandsJSONBody, LocalizationMap } from "discord-api-types/v10";
-import { AutocompleteInteraction, ChatInputCommandInteraction, PermissionResolvable, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
+import { AutocompleteInteraction, ChatInputCommandInteraction, Client, ClientOptions, PermissionResolvable, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
 
 const ChannelType = {
     Voice: [CT.GuildVoice],
@@ -214,4 +214,22 @@ interface Argument extends PartialArgument {
     subcommand?: boolean;
 };
 
-export { ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, PartialArgument, Argument, Command, CommandData, CrossfishPermissions, CrossfishDoc, CrossfishDocMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }
+interface BaseClientOptions extends ClientOptions {
+    guilds?: string[];
+    errors?: {
+        Perms?: string,
+        Roles?: string,
+        Channel?: string,
+        Execution?: string
+    };
+}
+
+interface ExistingClientOptions extends BaseClientOptions {
+    client: Client
+}
+
+interface NewClientOptions extends BaseClientOptions {
+    token: string
+}
+
+export { BaseClientOptions, ExistingClientOptions, NewClientOptions, ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, PartialArgument, Argument, Command, CommandData, CrossfishPermissions, CrossfishDoc, CrossfishDocMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }

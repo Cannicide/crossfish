@@ -51,7 +51,7 @@ class CrossfishCommand implements Command {
 
     builder = new SlashCommandBuilder();
     #documented = false;
-    static docs = null;
+    static docs?: string | CrossfishDocMap;
 
     /**
      * @private
