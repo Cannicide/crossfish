@@ -1,5 +1,5 @@
-import ErrorUtil from "./errors";
-import { ArgType } from "./types";
+import ErrorUtil from "./errors.js";
+import { ArgType } from "./types.js";
 class CrossfishSyntax {
     static parseArgument(syntax) {
         let comps = syntax.split(/(?<!([<][^>]*)|([\[][^\]]*))\s+(?!([^<]*[>])|([^\[]*[\]]))/g); // Matches all spaces outside outermost  <> or [] brackets, supports inner > and <

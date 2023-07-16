@@ -1,4 +1,4 @@
-import CrossfishSyntax from "./syntax";
+import CrossfishSyntax from "./syntax.js";
 import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
@@ -8,9 +8,9 @@ import {
     PermissionResolvable,
     SlashCommandStringOption
 } from "discord.js";
-import { ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command, CrossfishPermissions, RawArgumentData, CrossfishDocMap, CrossfishDoc, CrossfishLocalizations, CrossfishCommandAction, CrossfishAutocompleteActionMap, CrossfishCommandActionMap, CommandData } from "./types";
-import CrossfishHandler from "./handler";
-import ErrorUtil from "./errors";
+import { ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command, CrossfishPermissions, RawArgumentData, CrossfishDocMap, CrossfishDoc, CrossfishLocalizations, CrossfishCommandAction, CrossfishAutocompleteActionMap, CrossfishCommandActionMap, CommandData } from "./types.js";
+import CrossfishHandler from "./handler.js";
+import ErrorUtil from "./errors.js";
 
 /**
  * Util function for checking if a value is defined.

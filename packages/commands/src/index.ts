@@ -1,7 +1,7 @@
-import CrossfishCommand from "./command";
-import CrossfishHandler from "./handler";
-import ErrorUtil from "./errors";
-import { CrossfishDocMap, ExistingClientOptions, NewClientOptions } from "./types";
+import CrossfishCommand from "./command.js";
+import CrossfishHandler from "./handler.js";
+import ErrorUtil from "./errors.js";
+import { CrossfishDocMap, ExistingClientOptions, NewClientOptions } from "./types.js";
 import fs from "fs";
 import { Client } from "discord.js";
 
@@ -112,7 +112,7 @@ export default function crossfishHandler(opts: ExistingClientOptions | NewClient
         client.login(opts.token);
    }
 
-   const commandPath = "./";
+   const commandPath = "./"; // TODO: get path to /commands
    client.once("ready", async () => {
        await CrossfishUtils.loadFiles(commandPath);
        if ("guilds" in opts) CrossfishHandler.debugGuilds(opts.guilds as string[]);

@@ -1,6 +1,6 @@
-import CrossfishCommand from "./command";
-import CrossfishHandler from "./handler";
-import ErrorUtil from "./errors";
+import CrossfishCommand from "./command.js";
+import CrossfishHandler from "./handler.js";
+import ErrorUtil from "./errors.js";
 import fs from "fs";
 import { Client } from "discord.js";
 /**
@@ -101,7 +101,7 @@ export default function crossfishHandler(opts) {
         client = new Client(opts);
         client.login(opts.token);
     }
-    const commandPath = "./";
+    const commandPath = "./"; // TODO: get path to /commands
     client.once("ready", async () => {
         await CrossfishUtils.loadFiles(commandPath);
         if ("guilds" in opts)

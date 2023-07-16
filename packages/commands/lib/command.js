@@ -1,8 +1,8 @@
-import CrossfishSyntax from "./syntax";
+import CrossfishSyntax from "./syntax.js";
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, PermissionsBitField } from "discord.js";
-import { ArgType, SubType, ArgTypeUtil, SubTypeUtil } from "./types";
-import CrossfishHandler from "./handler";
-import ErrorUtil from "./errors";
+import { ArgType, SubType, ArgTypeUtil, SubTypeUtil } from "./types.js";
+import CrossfishHandler from "./handler.js";
+import ErrorUtil from "./errors.js";
 /**
  * Util function for checking if a value is defined.
  */

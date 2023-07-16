@@ -1,6 +1,6 @@
 import { Collection, Client, GuildMember, Guild, ApplicationCommandDataResolvable, GuildChannel } from "discord.js";
-import ErrorUtil from "./errors";
-import { Command } from "./types";
+import ErrorUtil from "./errors.js";
+import { Command } from "./types.js";
 
 class CrossfishHandler {
     

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { Command, CrossfishPermissions, RawArgumentData, CrossfishDocMap, CrossfishDoc, CrossfishCommandAction, CrossfishAutocompleteActionMap, CrossfishCommandActionMap, CommandData } from "./types";
+import { Command, CrossfishPermissions, RawArgumentData, CrossfishDocMap, CrossfishDoc, CrossfishCommandAction, CrossfishAutocompleteActionMap, CrossfishCommandActionMap, CommandData } from "./types.js";
 declare class CrossfishCommand implements Command {
     #private;
     builder: SlashCommandBuilder;

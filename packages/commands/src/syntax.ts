@@ -1,5 +1,5 @@
-import ErrorUtil from "./errors";
-import { ArgType, PartialArgument, Argument } from "./types";
+import ErrorUtil from "./errors.js";
+import { ArgType, PartialArgument, Argument } from "./types.js";
 
 class CrossfishSyntax {
     

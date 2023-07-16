@@ -1,5 +1,5 @@
 import { Collection, Client, Guild } from "discord.js";
-import { Command } from "./types";
+import { Command } from "./types.js";
 declare class CrossfishHandler {
     #private;
     static initialized: boolean;

@@ -1,5 +1,5 @@
 import { Collection } from "discord.js";
-import ErrorUtil from "./errors";
+import ErrorUtil from "./errors.js";
 class CrossfishHandler {
     static #cache = new Collection();
     static initialized = false;

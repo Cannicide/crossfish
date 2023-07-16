@@ -1,5 +1,5 @@
-import CrossfishCommand from "./command";
-import { CrossfishDocMap, ExistingClientOptions, NewClientOptions } from "./types";
+import CrossfishCommand from "./command.js";
+import { CrossfishDocMap, ExistingClientOptions, NewClientOptions } from "./types.js";
 import { Client } from "discord.js";
 /**
  * Creates a new slash command with the given name and description.
