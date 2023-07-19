@@ -1,0 +1,1 @@
+throw new Error("\n\nHello and thank you for your interest in Crossfish!\nUnfortunately, Crossfish and its array of custom dependencies are currently under construction and cannot be used yet.\nCheck the NPM page later and install once it is fully complete!\n\n");

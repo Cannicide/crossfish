@@ -1,0 +1,38 @@
+{
+  "name": "crossfish",
+  "version": "1.0.0",
+  "description": "The powerful all-in-one Discord bot creation suite.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node ./test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cannicide/crossfish.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "slash",
+    "handler",
+    "command",
+    "discord.js",
+    "djs",
+    "cannicide"
+  ],
+  "author": "Cannicide",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Cannicide/crossfish/issues"
+  },
+  "homepage": "https://github.com/Cannicide/crossfish#readme",
+  "files": [
+    "/lib"
+  ],
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  }
+}
