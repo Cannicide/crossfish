@@ -223,6 +223,7 @@ interface BaseClientOptions extends ClientOptions {
         Execution?: string
     };
     path?: string;
+    debug?: boolean;
 }
 
 interface ExistingClientOptions extends BaseClientOptions {

@@ -1,9 +1,9 @@
 import CrossfishCommand from "./command.js";
 import CrossfishHandler from "./handler.js";
-import ErrorUtil from "./errors.js";
 import { CrossfishDocMap, ExistingClientOptions, NewClientOptions } from "./types.js";
 import fs from "fs";
-import { Client } from "discord.js";
+import path from "path";
+import { BitFieldResolvable, Client, IntentsBitField } from "discord.js";
 
 /**
  * Creates a new slash command with the given name and description.
@@ -63,10 +63,13 @@ class CrossfishUtils {
      * Used internally by @crossfish/commands to load command files.
      * @private
      */
-    static async loadFiles(dir: string) {
-        dir = dir.replace("C:", "").replace(/\\/g, "/");
+    static async loadFiles(relativeDir: string, ignoreWarnings = false) {
+        const dir = CrossfishUtils.relativePath(relativeDir);
 
-        ErrorUtil.pred(() => !fs.existsSync(dir), `Invalid path to command file/directory '${dir}' provided.\nBe sure to use an absolute path, such as '__dirname + "/commands"'`);
+        if (!fs.existsSync(dir)) {
+            if (!ignoreWarnings) console.warn(`[@crossfish/commands] Failed to load provided path '${dir}'.`);
+            return;
+        }
 
         if (!fs.lstatSync(dir).isDirectory()) return this.loadFile(dir);
         let files = fs.readdirSync(dir);
@@ -74,7 +77,7 @@ class CrossfishUtils {
         for (const file of files) {
             let path = dir + "/" + file;
             if (fs.lstatSync(path).isDirectory()) {
-                await this.loadFiles(path);
+                await this.loadFiles(path, ignoreWarnings);
             } else if (path.endsWith(".js") || path.endsWith(".cjs") || path.endsWith(".mjs")) {
                 await this.loadFile(path);
             }
@@ -87,7 +90,39 @@ class CrossfishUtils {
      * @private
      */
     static async loadFile(path: string) {
-        await import(path);
+        await import("file://" + path);
+    }
+
+    /**
+     * Derived and modified from https://stackoverflow.com/a/67576784/6901876
+     */
+    static relativePath(p: string): string {
+        if (!p.startsWith(".")) return p;
+
+        const error: Error = new Error();
+        const stack: string[] = error.stack?.split('\n') as string[];
+        const data: string = stack[3];
+
+        const filePathPattern: RegExp = new RegExp(`(file:[/]{2}.+[^:0-9]):{1}[0-9]+:{1}[0-9]+`);
+        const result: RegExpExecArray = filePathPattern.exec(data) as RegExpExecArray;
+
+        let filePath: string = '';
+        if (result && (result.length > 1)) {
+            filePath = result[1];
+        }
+
+        filePath = path.dirname(filePath.replace("file:///", ""));
+        return decodeURIComponent(path.resolve(filePath, p));
+    }
+
+    /**
+     * Gets all intents.
+     * 
+     * ONLY FOR INTERNAL TESTING/DEBUGGING PURPOSES.
+     * NOT RECOMMENDED TO USE IN PRODUCTION.
+     */
+    static allIntents() : BitFieldResolvable<string, any>[] {
+        return Object.values(IntentsBitField.Flags);
     }
 }
 
@@ -99,7 +134,7 @@ function isExistingClient(opts: ExistingClientOptions | NewClientOptions): opts 
  * Initializes the command handler. This method must be called to create, update, and handle your commands.
  * Can use an existing Discord.js Client, or create a new one for you.
  */
-export default function crossfishHandler(opts: ExistingClientOptions | NewClientOptions) {
+export default function crossfishHandler(opts: ExistingClientOptions | NewClientOptions) : Client {
 
    if (opts.errors) {
        CrossfishHandler.Errors = {...CrossfishHandler.Errors, ...opts.errors};
@@ -112,15 +147,18 @@ export default function crossfishHandler(opts: ExistingClientOptions | NewClient
         client.login(opts.token);
    }
 
-   const commandPath = "./"; // TODO: get path to /commands
+   let commandsPath = CrossfishUtils.relativePath(opts.path ?? "./commands");
+
    client.once("ready", async () => {
-       await CrossfishUtils.loadFiles(commandPath);
+       await CrossfishUtils.loadFiles(commandsPath, true);
        if ("guilds" in opts) CrossfishHandler.debugGuilds(opts.guilds as string[]);
-       CrossfishHandler.initialize(client, !!opts.guilds);
+       CrossfishHandler.initialize(client, !!opts.debug);
        await CrossfishHandler.initialized;
    });
 
    return client;
 }
+
+export const utils = CrossfishUtils;
 
 // TODO: add message and user commands
