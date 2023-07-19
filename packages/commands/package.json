@@ -7,7 +7,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "node ./test/test.js"
+    "test": "node ./test/test.js",
+    "deploy": "npm publish --access public"
   },
   "repository": {
     "type": "git",
