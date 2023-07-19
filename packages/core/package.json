@@ -1,6 +1,6 @@
 {
   "name": "crossfish",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The powerful all-in-one Discord bot creation suite.",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
