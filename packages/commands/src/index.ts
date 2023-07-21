@@ -1,6 +1,7 @@
-import CrossfishCommand from "./command.js";
+import CrossfishCommand from "./command/slash.js";
+import CrossfishContextMenu from "./command/context.js";
 import CrossfishHandler from "./handler.js";
-import { CrossfishDocMap, ExistingClientOptions, NewClientOptions } from "./types.js";
+import { CrossfishManifestMap, ExistingClientOptions, NewClientOptions } from "./types.js";
 import fs from "fs";
 import path from "path";
 import { BitFieldResolvable, Client, IntentsBitField } from "discord.js";
@@ -13,13 +14,24 @@ export function command(name: string, description: string) {
 }
 
 /**
+ * Creates a new user/message context menu command with the given name.
+ */
+export function contextmenu(name: string) {
+    return new CrossfishContextMenu(name);
+}
+
+/**
  * Documents all commands' argument names mapped to descriptions and localizations, via JSON file or JSON-compatible Object literal.
  * The provided JSON can contain data for one or more commands, facilitating the documentation of multiple commands with one JSON file.
  * 
- * This method functions the same as using '.docs()' manually on all of your commands.
+ * This method functions the same as using '.manifest()' manually on all of your commands.
  * It is recommended to use this method before initializing your commands, to allow the documentation to apply to the commands before publishing them.
  * @example
- * docs({
+ * manifest("./manifest.json");
+ * 
+ * // OR
+ * 
+ * manifest({
  *  // Basic documentation of command 'cmd1':
  *  "cmd1": {
  *      // Descriptions of '/cmd1 group add <name> <description>' and '/cmd1 group get <name>':
@@ -51,8 +63,9 @@ export function command(name: string, description: string) {
  *  }
  * });
  */
-export function docs(json: string|CrossfishDocMap) {
-    CrossfishCommand.docs = json;
+export function manifest(json: string|CrossfishManifestMap) {
+    if (typeof json === "string") json = CrossfishUtils.relativePath(json);
+    CrossfishCommand.manifest = json;
 }
 
 class CrossfishUtils {
@@ -94,6 +107,8 @@ class CrossfishUtils {
     }
 
     /**
+     * Parses a relative path into an absolute one.
+     * 
      * Derived and modified from https://stackoverflow.com/a/67576784/6901876
      */
     static relativePath(p: string): string {
@@ -160,5 +175,3 @@ export default function crossfishHandler(opts: ExistingClientOptions | NewClient
 }
 
 export const utils = CrossfishUtils;
-
-// TODO: add message and user commands

@@ -1,5 +1,5 @@
-import { ChannelType as CT, RESTPostAPIChatInputApplicationCommandsJSONBody, LocalizationMap } from "discord-api-types/v10";
-import { AutocompleteInteraction, ChatInputCommandInteraction, Client, ClientOptions, PermissionResolvable, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder } from "discord.js";
+import { ChannelType as CT, RESTPostAPIChatInputApplicationCommandsJSONBody, LocalizationMap, RESTPostAPIContextMenuApplicationCommandsJSONBody } from "discord-api-types/v10";
+import { AutocompleteInteraction, ChatInputCommandInteraction, Client, ClientOptions, ContextMenuCommandBuilder, Message, MessageContextMenuCommandInteraction, PermissionResolvable, SlashCommandBuilder, SlashCommandStringOption, SlashCommandSubcommandBuilder, SlashCommandSubcommandGroupBuilder, User, UserContextMenuCommandInteraction } from "discord.js";
 
 const ChannelType = {
     Voice: [CT.GuildVoice],
@@ -136,13 +136,15 @@ type CrossfishPermissions = PermissionResolvable;
 type CrossfishLocalizations = LocalizationMap & { "default": string | null | undefined };
 type CrossfishAutocompleteAction = (interaction: AutocompleteInteraction) => any;
 type CrossfishCommandAction = (interaction: ChatInputCommandInteraction) => any;
+type CrossfishMessageContextMenuAction = (interaction: MessageContextMenuCommandInteraction, message: Message) => any;
+type CrossfishUserContextMenuAction = (interaction: UserContextMenuCommandInteraction, user: User) => any;
 
-interface CrossfishDoc {
+interface CrossfishManifest {
     [argumentName: string]: string | LocalizationMap;
 }
 
-interface CrossfishDocMap {
-    [commandName: string]: CrossfishDoc;
+interface CrossfishManifestMap {
+    [commandName: string]: CrossfishManifest;
 }
 
 interface CrossfishAutocompleteActionMap {
@@ -168,25 +170,50 @@ interface RawArgumentData {
     minLength?: number;
 }
 
-interface CommandData {
-    subs: Map<string, SlashCommandSubcommandBuilder|SlashCommandSubcommandGroupBuilder|SlashCommandStringOption>;
-    autoComplete: Map<string, CrossfishAutocompleteAction>;
+interface BaseCommandData {
     requires: {
         perms: Set<CrossfishPermissions>,
         roles: Set<string>
     };
-    channels: Set<string>;
     guilds: Set<string>;
-    docs?: CrossfishDoc;
+    action: any;
+    JSON?: any;
+}
+
+interface CommandData extends BaseCommandData {
+    subs: Map<string, SlashCommandSubcommandBuilder|SlashCommandSubcommandGroupBuilder|SlashCommandStringOption>;
+    autoComplete: Map<string, CrossfishAutocompleteAction>;
+    channels: Set<string>;
+    manifest?: CrossfishManifest;
     action: CrossfishCommandAction;
     JSON?: RESTPostAPIChatInputApplicationCommandsJSONBody;
 }
 
-interface Command {
+interface ContextMenuCommandData extends BaseCommandData {
+    action: CrossfishMessageContextMenuAction|CrossfishUserContextMenuAction;
+    JSON?: RESTPostAPIContextMenuApplicationCommandsJSONBody;
+}
+
+interface BaseCommand {
+    data: BaseCommandData;
+
+    builder: any;
+    requires(...permsOrRoles: string[]|string[][]) : BaseCommand;
+    guilds(...guilds: string[]|string[][]) : BaseCommand;
+    allowDM(enabled: boolean) : BaseCommand;
+    action(method: any) : void;
+
+    /**
+     * @private
+     */
+    build(): any;
+}
+
+interface Command extends BaseCommand {
     data: CommandData;
 
     builder: SlashCommandBuilder;
-    docs(json: string|CrossfishDocMap) : Command;
+    manifest(json: string|CrossfishManifestMap) : Command;
     arguments(...args: string[]|string[][]) : Command;
     requires(...permsOrRoles: string[]|string[][]) : Command;
     channels(...channels: string[]|string[][]) : Command;
@@ -194,7 +221,41 @@ interface Command {
     allowDM(enabled: boolean) : Command;
     nsfw() : Command;
     autocomplete(methods: CrossfishAutocompleteActionMap) : Command;
-    action(method: CrossfishCommandAction | CrossfishCommandActionMap): void;
+    action(method: CrossfishCommandAction | CrossfishCommandActionMap) : void;
+}
+
+interface ContextMenuCommand extends BaseCommand {
+    data: ContextMenuCommandData;
+
+    builder: ContextMenuCommandBuilder;
+    message() : MessageContextMenuCommand; 
+    user() : UserContextMenuCommand;
+}
+
+interface MessageContextMenuCommand extends Omit<ContextMenuCommand, "message" | "user"> {
+    /**
+     * Defines a method to execute when the message context menu command is executed.
+     * 
+     * This method, action(), should be the last called of the command configuration methods, as the command is built by this method.
+     * @example
+     * action((interaction, message) => {
+     *  interaction.reply("Hello world! The message content is: " + message.content);
+     * });
+     */
+    action(method: CrossfishMessageContextMenuAction) : void;
+}
+
+interface UserContextMenuCommand extends Omit<ContextMenuCommand, "message" | "user"> {
+    /**
+     * Defines a method to execute when the user context menu command is executed.
+     * 
+     * This method, action(), should be the last called of the command configuration methods, as the command is built by this method.
+     * @example
+     * action((interaction, user) => {
+     *  interaction.reply("Hello world! The user is: " + user.username);
+     * });
+     */
+    action(method: CrossfishUserContextMenuAction) : void;
 }
 
 interface PartialArgument {
@@ -234,4 +295,4 @@ interface NewClientOptions extends BaseClientOptions {
     token: string
 }
 
-export { BaseClientOptions, ExistingClientOptions, NewClientOptions, ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, PartialArgument, Argument, Command, CommandData, CrossfishPermissions, CrossfishDoc, CrossfishDocMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }
+export { BaseClientOptions, ExistingClientOptions, NewClientOptions, BaseCommand, BaseCommandData, ContextMenuCommand, MessageContextMenuCommand, UserContextMenuCommand, ContextMenuCommandData, CrossfishMessageContextMenuAction, CrossfishUserContextMenuAction, ChannelType, ArgType, SubType, ArgTypeUtil, SubTypeUtil, PartialArgument, Argument, Command, CommandData, CrossfishPermissions, CrossfishManifest, CrossfishManifestMap, RawArgumentData, CrossfishLocalizations, CrossfishAutocompleteActionMap, CrossfishCommandAction, CrossfishAutocompleteAction, CrossfishCommandActionMap }

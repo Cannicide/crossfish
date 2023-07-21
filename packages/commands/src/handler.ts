@@ -1,10 +1,10 @@
 import { Collection, Client, GuildMember, Guild, ApplicationCommandDataResolvable, GuildChannel } from "discord.js";
 import ErrorUtil from "./errors.js";
-import { Command } from "./types.js";
+import { Command, BaseCommand, CommandData, BaseCommandData } from "./types.js";
 
 class CrossfishHandler {
     
-    static #cache = new Collection<string, Command>();
+    static #cache = new Collection<string, BaseCommand>();
     static initialized = false;
     static client: Client;
     static #debug: boolean;
@@ -39,11 +39,11 @@ class CrossfishHandler {
         }
     }
 
-    static getCommand(commandName: string) : Command | null {
+    static getCommand(commandName: string) : BaseCommand | null {
         return this.#cache.get(commandName) ?? null;
     }
 
-    static async setCommand(commandName: string, command: Command) {
+    static async setCommand(commandName: string, command: BaseCommand) {
         this.#cache.set(commandName, command);
         if (await this.initialized) this.postInitializeCommand(command);
     }
@@ -62,7 +62,10 @@ class CrossfishHandler {
         this.client.on("interactionCreate", async interaction => {
             if (!interaction.isAutocomplete()) return;
             
-            let autoCompleteMap = this.getCommand(interaction.commandName)?.data.autoComplete;
+            let commandData = this.getCommand(interaction.commandName)?.data;
+            if (!commandData) return;
+
+            let autoCompleteMap = (commandData as CommandData).autoComplete;
             if (!autoCompleteMap) return;
 
             const arg = interaction.options.getFocused(true).name;
@@ -80,6 +83,10 @@ class CrossfishHandler {
                 else interaction.respond(result.map((key: { name: string, value: any }) => ({ name: key, value: key })));
             }
         });
+    }
+
+    static #isSlashCommandData(T: BaseCommandData) : T is CommandData {
+        return "channels" in T;
     }
 
     static async initializeCommands() : Promise<true> {
@@ -118,16 +125,19 @@ class CrossfishHandler {
 
         // Setup command listener:
         this.client.on("interactionCreate", async interaction => {
-            if (!interaction.isChatInputCommand()) return;
+            if (!interaction.isChatInputCommand() && !interaction.isContextMenuCommand()) return;
 
-            let command = this.getCommand(interaction.commandName)?.data;
+            let rawCommand = this.getCommand(interaction.commandName);
+            if (!rawCommand) return;
+
+            let command = rawCommand.data;
             if (!command) return;
 
-            const channels = [...command.channels.values()];
+            const channels = this.#isSlashCommandData(command) ? [...command.channels.values()] : [];
             const perms = [...command.requires.perms.values()];
             const roles = [...command.requires.roles.values()];
             const action = command.action;
-            const member = interaction.member as GuildMember;
+            const member = interaction.member ? (interaction.member as GuildMember) : null;
 
             if (channels.length && interaction.channel && !interaction.channel.isDMBased() && !channels.some(c => c && (c == (interaction.channel as GuildChannel).name || c == interaction.channel?.id))) {
                 if (CrossfishHandler.Errors.Channel) interaction.reply({ content: CrossfishHandler.Errors.Channel, ephemeral: true });
@@ -150,7 +160,7 @@ class CrossfishHandler {
                     if (interaction.deferred && CrossfishHandler.Errors.Execution) interaction.editReply({ content: CrossfishHandler.Errors.Execution });
                     else if (!interaction.replied && CrossfishHandler.Errors.Execution) interaction.reply({ content: CrossfishHandler.Errors.Execution, ephemeral: true });
 
-                    setTimeout(() => ErrorUtil.pred(() => true, `Error occurred while executing command '${interaction.commandName}':\n\t${err.message}`), 100);
+                    setTimeout(() => ErrorUtil.pred(() => true, `Error occurred while executing command '${interaction.commandName}':\n\t> ${err.message}`), 100);
                 }, 1000);
             }
         });
@@ -158,7 +168,7 @@ class CrossfishHandler {
         return true;
     }
 
-    static async postInitializeCommand(command: Command) {
+    static async postInitializeCommand(command: BaseCommand) {
         if (!this.client) return;
 
         const data = command.data;

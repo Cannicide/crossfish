@@ -1,4 +1,4 @@
-import CrossfishSyntax from "./syntax.js";
+import CrossfishSyntax from "../syntax.js";
 import {
     SlashCommandBuilder,
     SlashCommandSubcommandBuilder,
@@ -8,9 +8,9 @@ import {
     PermissionResolvable,
     SlashCommandStringOption
 } from "discord.js";
-import { ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command, CrossfishPermissions, RawArgumentData, CrossfishDocMap, CrossfishDoc, CrossfishLocalizations, CrossfishCommandAction, CrossfishAutocompleteActionMap, CrossfishCommandActionMap, CommandData } from "./types.js";
-import CrossfishHandler from "./handler.js";
-import ErrorUtil from "./errors.js";
+import { ArgType, SubType, ArgTypeUtil, SubTypeUtil, Command, CrossfishPermissions, RawArgumentData, CrossfishManifestMap, CrossfishManifest, CrossfishLocalizations, CrossfishCommandAction, CrossfishAutocompleteActionMap, CrossfishCommandActionMap, CommandData } from "../types.js";
+import CrossfishHandler from "../handler.js";
+import ErrorUtil from "../errors.js";
 
 /**
  * Util function for checking if a value is defined.
@@ -21,9 +21,12 @@ function isDefined(value: any) {
 
 class CrossfishCommand implements Command {
 
+    /**
+     * @private
+     */
     builder = new SlashCommandBuilder();
     #documented = false;
-    static docs?: string | CrossfishDocMap;
+    static manifest?: string | CrossfishManifestMap;
 
     /**
      * @private
@@ -37,7 +40,7 @@ class CrossfishCommand implements Command {
         },
         channels: new Set<string>(),
         guilds: new Set<string>(),
-        docs: {},
+        manifest: {},
         action: (interaction: ChatInputCommandInteraction) => {},
         JSON: undefined
     } as CommandData
@@ -51,9 +54,9 @@ class CrossfishCommand implements Command {
      * Documents the command's argument names mapped to descriptions and localizations, via JSON file or JSON-compatible Object literal.
      * The provided JSON can contain data for more than one command, facilitating the documentation of multiple commands with one JSON file.
      * 
-     * This method, docs(), can be called before or after argument creation.
+     * This method, manifest(), can be called before or after argument creation.
      * @example
-     * docs({
+     * manifest({
      *  // Basic documentation of command 'cmd1':
      *  "cmd1": {
      *      // Descriptions of '/cmd1 group add <name> <description>' and '/cmd1 group get <name>':
@@ -85,7 +88,7 @@ class CrossfishCommand implements Command {
      *  }
      * });
      */
-    docs(json: string|CrossfishDocMap) : CrossfishCommand {
+    manifest(json: string|CrossfishManifestMap) : CrossfishCommand {
         if (this.#documented) return this;
 
         ErrorUtil.noexist(json, "JSON or path to JSON was not provided to docs()");
@@ -94,10 +97,10 @@ class CrossfishCommand implements Command {
             json = require(json);
         }
 
-        const out = json as CrossfishDocMap;
+        const out = json as CrossfishManifestMap;
         ErrorUtil.pred(() => !(this.builder.name in out), `The provided documentation JSON does not contain documentation for command '${this.builder.name}'`);
 
-        this.data.docs = out[this.builder.name];
+        this.data.manifest = out[this.builder.name];
         return this;
     }
 
@@ -110,7 +113,7 @@ class CrossfishCommand implements Command {
         ErrorUtil.noexist(name, "Command name was not provided");
         ErrorUtil.badtype(name, "string", "command name");
         ErrorUtil.minmax(name.length, "command name length", 1, 32);
-        ErrorUtil.slashname(name, "command");
+        ErrorUtil.badname(name, "command");
 
         this.builder.setName(name);
         return this;
@@ -144,7 +147,7 @@ class CrossfishCommand implements Command {
         ErrorUtil.noexist(description, "The Discord API requires subcommand/subgroup descriptions, and one was not provided");
         ErrorUtil.badtype(description, "string", "subcommand/subgroup description");
         ErrorUtil.minmax(name.length, "subcommand/subgroup name length", 1, 32);
-        ErrorUtil.slashname(name, "subcommand/subgroup");
+        ErrorUtil.badname(name, "subcommand/subgroup");
 
         let [ subgroup, subcommand ] = name.split(" ");
         if (subgroup && subcommand) type = SubType.Hybrid;
@@ -286,7 +289,7 @@ class CrossfishCommand implements Command {
         ErrorUtil.pred(() => choices && choices.some(c => c.toString().length < 1 || c.toString().length > 100), `At least one argument choice falls outside the required length range of 1-100 characters`);
         if (isDefined(description)) ErrorUtil.minmax(description.length, "argument description length", 1, 100);
         if (isDefined(name)) ErrorUtil.minmax(name?.length, "argument name length", 1, 32);
-        if (isDefined(name)) ErrorUtil.slashname(name, "argument");
+        if (isDefined(name)) ErrorUtil.badname(name, "argument");
 
         // Check datatype
         let parsedType = ArgTypeUtil.get(type);
@@ -465,7 +468,7 @@ class CrossfishCommand implements Command {
      * Used internally by docs().
      * @private
      */
-    descriptions(descriptions: CrossfishDoc) : CrossfishCommand {
+    descriptions(descriptions: CrossfishManifest) : CrossfishCommand {
         if (this.#documented) return this;
         ErrorUtil.noexist(descriptions, "Argument/subcommand descriptions were not provided");
 
@@ -612,8 +615,8 @@ class CrossfishCommand implements Command {
     build() {
         // Handle documentation
 
-        if (CrossfishCommand.docs && !this.data.docs) this.docs(CrossfishCommand.docs);
-        if (this.data.docs) this.descriptions(this.data.docs);
+        if (CrossfishCommand.manifest && !this.data.manifest) this.manifest(CrossfishCommand.manifest);
+        if (this.data.manifest) this.descriptions(this.data.manifest);
 
         // Build command
 

@@ -1,5 +1,8 @@
 import { Collection } from "discord.js";
 
+// TODO: swap out this entire class with a more robust validator in @crossfish/utils
+// (ex: validator.string.doesExist().isString().isGreaterThan(1).isLessThan(32).check("Test this")
+
 export default class ErrorUtil {
     /**
      * Throws an error when a required variable has a falsy value (undefined, null, false).
@@ -39,14 +42,14 @@ export default class ErrorUtil {
     }
 
     /**
-     * Throws an error if slash command name validation -- which are used by the names of commands and their arguments -- fails.
+     * Throws an error if command name validation -- which are used by the names of slash/context commands and their arguments -- fails.
      */
-    static slashname(name: string|undefined, descriptor: string) {
+    static badname(name: string|undefined, descriptor: string) {
         if (!name) return;
 
         // Official regex provided by Discord API, modified to allow space character
         if (!name.match(/^[-_ \p{L}\p{N}\p{sc=Deva}\p{sc=Thai}]{1,32}$/gu)) throw new Error(`Crossfish Commands Error: Invalid ${descriptor} name '${name}'. These names can only contain '-', '_', and letters and numbers in any language.`);
-        if (name.match(/[\p{Lu}]/gu)) throw new Error(`Crossfish Commands Error: Invalid ${descriptor} name '${name}'. These names must be fully lowercase, except for letters in certain languages that do not have lowercase variants.`);
+        if (descriptor !== "context menu" && name.match(/[\p{Lu}]/gu)) throw new Error(`Crossfish Commands Error: Invalid ${descriptor} name '${name}'. These names must be fully lowercase, except for letters in certain languages that do not have lowercase variants.`);
     }
 
     /**
