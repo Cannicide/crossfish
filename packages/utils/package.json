@@ -1,0 +1,46 @@
+{
+  "name": "@crossfish/utils",
+  "version": "1.0.0",
+  "description": "A collection of useful, version-agnostic utilities for Discord bot development.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node ./test/test.js",
+    "deploy": "npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cannicide/crossfish.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "slash",
+    "handler",
+    "command",
+    "discord.js",
+    "djs",
+    "cannicide",
+    "utils",
+    "utilities"
+  ],
+  "author": "Cannicide",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Cannicide/crossfish/issues"
+  },
+  "homepage": "https://github.com/Cannicide/crossfish#readme",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "discord.js": "^14.11.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1",
+    "typescript": "^5.1.6"
+  },
+  "files": [
+    "/lib"
+  ]
+}
