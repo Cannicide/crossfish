@@ -1,5 +1,6 @@
 import { BaseAssertions, chalk } from "./base.js";
 
+// TODO: change colors for all methods
 export class BooleanAssertions extends BaseAssertions {
 
     constructor(name: string) {

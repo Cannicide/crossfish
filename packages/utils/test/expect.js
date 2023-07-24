@@ -56,6 +56,8 @@ expect.bool("Boolean Tests")
     // .isInverseOf(false) // Does error
     .assert("Val3", val3);
 
+// TODO: Number assertions:
+
 // After all error check assertions, print if no errors:
 
 console.log(chalk.greenBright("No errors!\nEverything is working, as all error-causing assertions should be commented out!"));
