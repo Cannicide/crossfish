@@ -1,7 +1,8 @@
-import { BaseAssertions } from "./base.js";
+import { BaseAssertions, CrossfishError } from "./base.js";
 import { StringAssertions } from "./string.js";
 import { BooleanAssertions } from "./bool.js";
 import { NumberAssertions } from "./number.js";
+import { ArrayAssertions } from "./array.js";
 
 interface CrossfishExpect {
     /**
@@ -20,6 +21,10 @@ interface CrossfishExpect {
      * Assertions and validation for Number variables.
      */
     number(validatorNamespace: string): NumberAssertions;
+    /**
+     * Assertions and validation for Array variables.
+     */
+    array(validatorNamespace: string): ArrayAssertions;
 }
 
 export const expect : CrossfishExpect = Object.assign(
@@ -27,6 +32,9 @@ export const expect : CrossfishExpect = Object.assign(
     { 
         string: (validatorNamespace: string) => { return new StringAssertions(validatorNamespace); },
         bool: (validatorNamespace: string) => { return new BooleanAssertions(validatorNamespace); },
-        number: (validatorNamespace: string) => { return new NumberAssertions(validatorNamespace); }
+        number: (validatorNamespace: string) => { return new NumberAssertions(validatorNamespace); },
+        array: (validatorNamespace: string) => { return new ArrayAssertions(validatorNamespace); }
     }
 );
+
+export { CrossfishError };

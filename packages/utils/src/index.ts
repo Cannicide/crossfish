@@ -1,2 +1,2 @@
 
-export { expect } from "./expect/index.js";
+export { expect, CrossfishError } from "./expect/index.js";
