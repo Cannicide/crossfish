@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "node ./test/test.js",
+    "test": "npm run build && node ./test/test.js",
     "deploy": "npm publish --access public"
   },
   "repository": {
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "dotenv": "^16.3.1",
+    "prompt": "^1.3.0",
     "typescript": "^5.1.6"
   },
   "files": [
