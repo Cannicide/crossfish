@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction, CommandInteractionOption } from "discord.js";
 
-export function getArgs(interaction: ChatInputCommandInteraction) {
+export function args(interaction: ChatInputCommandInteraction, resolved = true) {
+    // TODO: add support for getting resolved args
     const args = {} as { [x: string]: string | number | boolean | undefined };
     const { ApplicationCommandOptionType } = require("discord-api-types/v10");
 
