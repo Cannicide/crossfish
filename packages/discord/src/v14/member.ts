@@ -1,5 +1,5 @@
 import { Guild, GuildMember, Snowflake } from "djs.14";
-import CrossfishCollection from "../../collection.js";
+import { CrossfishCollection } from "../collection.js";
 
 class CrossfishMember {
 
@@ -11,6 +11,7 @@ class CrossfishMember {
 
     /*
         Properties:
+
         TODO: avatarHash (changed)
         TODO: avatarURL (converted to prop)
         TODO: bannable
@@ -42,6 +43,7 @@ class CrossfishMember {
 
     /*
         Methods:
+
         TODO: ban
         TODO: createDM
         TODO: deleteDM
@@ -61,17 +63,9 @@ class CrossfishMember {
         TODO: toMention (added)
         TODO: toString
     */
-
-    inGuild(guild: Guild|Snowflake) {
-        // TODO
-    }
     
 };
-
-// TODO: allow all fields to support both async and sync
 
 export function member(member: GuildMember) {
     return new CrossfishMember(member);
 }
-
-// TODO: add asyncMember which works with a fetched member

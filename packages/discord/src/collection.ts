@@ -1,6 +1,6 @@
 import { Collection } from "djs.14";
 
-export default class CrossfishCollection<K, V> extends Collection<K, V> {
+export class CrossfishCollection<K, V> extends Collection<K, V> {
     constructor(iterable?: Iterable<readonly [K, V]> | null | undefined) {
         super(iterable);
     }
