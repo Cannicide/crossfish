@@ -1,0 +1,48 @@
+{
+  "name": "@crossfish/economy",
+  "version": "1.0.0",
+  "description": "Powerful tools for managing economy in Discord.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node ./test/test.js",
+    "deploy": "npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cannicide/crossfish.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "slash",
+    "handler",
+    "command",
+    "discord.js",
+    "djs",
+    "cannicide",
+    "economy",
+    "eco",
+    "quick",
+    "fast",
+    "easy"
+  ],
+  "author": "Cannicide",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Cannicide/crossfish/issues"
+  },
+  "homepage": "https://github.com/Cannicide/crossfish#readme",
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  },
+  "files": [
+    "/lib"
+  ],
+  "dependencies": {
+    "js-toml": "^0.1.1",
+    "sequelize": "^6.32.1"
+  }
+}
