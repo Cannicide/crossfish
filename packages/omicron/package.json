@@ -1,0 +1,52 @@
+{
+  "name": "@crossfish/omicron",
+  "version": "1.0.0",
+  "description": "A lightweight Typescript wrapper for the node-cron job scheduler.",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node ./test/test.js",
+    "deploy": "npm publish --access public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cannicide/crossfish.git"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "slash",
+    "handler",
+    "command",
+    "discord.js",
+    "djs",
+    "cannicide",
+    "cron",
+    "schedule",
+    "scheduler",
+    "scheduling",
+    "quick",
+    "fast",
+    "easy"
+  ],
+  "author": "Cannicide",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/Cannicide/crossfish/issues"
+  },
+  "homepage": "https://github.com/Cannicide/crossfish#readme",
+  "dependencies": {
+    "nanoid": "^4.0.2",
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.9",
+    "@types/node-cron": "^3.0.8",
+    "typescript": "^5.1.6"
+  },
+  "files": [
+    "/lib"
+  ]
+}
